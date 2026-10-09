@@ -1,0 +1,7 @@
+streamlit
+git+https://github.com/yt-dlp/yt-dlp.git@master
+moviepy==1.0.3
+edge-tts
+google-generativeai
+Pillow
+requests
