@@ -60,18 +60,27 @@ def run_tts(text, output_file):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
     loop.run_until_complete(text_to_speech(text, output_file))
-
-# 4. YouTube မှ Video နှင့် Thumbnail Download ဆွဲခြင်း (403 Error Fix)
+# 4. YouTube မှ Video နှင့် Thumbnail Download ဆွဲခြင်း (Alternative Fix)
 def download_youtube_info(url):
     ydl_opts = {
-        'format': 'bestvideo[height<=720]+bestaudio/best[height<=720]', 
+        'format': 'bestvideo[height<=720]+bestaudio/best[height<=720]',
         'outtmpl': 'downloaded_video.%(ext)s',
         'merge_output_format': 'mp4',
         'quiet': True,
-        # YouTube 403 Forbidden Error ဖြေရှင်းရန် အပိုင်း
+        'no_warnings': True,
+        'nocheckcertificate': True, # Certificate check ကို ပိတ်ထားပါမယ်
         'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
+        # User Agent ကို ပိုမို ရိုးရှင်းအောင် ပြင်ဆင်ထားပါတယ်
         'http_headers': {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', 
+        }
+    }
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url, download=True)
+        video_filename = ydl.prepare_filename(info)
+        thumbnail_url = info.get('thumbnail', None)
+        return video_filename, thumbnail_url
+
         }
     }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
